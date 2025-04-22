@@ -41,33 +41,29 @@ jobs:
     - name: Execute unit tests
       run: dotnet test
 
-    # Envoyer une notification Slack
-    - name: Notify Slack
+      # Envoyer une notification Slack
+    - name: Notify Slack Success
       if: steps.check_commit.outputs.success == 'true'
-      uses: slackapi/slack-github-action@v1.18.0
-      with:
-        payload: |
-          {
-            "text": "✅ Le commit a réussi !",
-            "attachments": [
-              {
-                "image_url": "https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif",
-                "alt_text": "Soleil"
-              }
-            ]
-          }
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{
+          "text": "✅ Le commit a réussi !",
+          "attachments": [
+            {
+              "image_url": "https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif",
+              "alt_text": "Soleil"
+            }
+          ]
+        }' ${{ secrets.SLACK_WEBHOOK_URL }}
 
-    - name: Notify Slack on failure
+    - name: Notify Slack Failure
       if: steps.check_commit.outputs.success == 'false'
-      uses: slackapi/slack-github-action@v1.18.0
-      with:
-        payload: |
-          {
-            "text": "⚠️ Le commit a échoué.",
-            "attachments": [
-              {
-                "image_url": "https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif",
-                "alt_text": "Orage"
-              }
-            ]
-          }
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{
+          "text": "⚠️ Le commit a échoué.",
+          "attachments": [
+            {
+              "image_url": "https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif",
+              "alt_text": "Orage"
+            }
+          ]
+        }' ${{ secrets.SLACK_WEBHOOK_URL }}
