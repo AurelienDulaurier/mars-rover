@@ -11,13 +11,21 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
+    - name: Check commit message
+      run: |
+          REQUIRED_EMOJI="🚀|👽|🪐"
+          if ! git log -1 --pretty=%B | grep -E -q "$REQUIRED_EMOJI"; then
+            echo "Erreur : Le dernier commit doit contenir l'emoji $REQUIRED_EMOJI."
+            exit 1
+          fi
+ 
+    # Installer le .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
-# Mettre en cache les dépendances .NET
+    # Mettre en cache les dépendances .NET
     - name: Cache NuGet packages
       uses: actions/cache@v3
       with:
@@ -26,14 +34,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
     
-# Execute all unit tests in the solution
+    # Exécuter tous les tests unitaires dans la solution
     - name: Execute unit tests
       run: dotnet test
-    
-    - name: Check commit message
-      run: |
-          REQUIRED_EMOJI="🚀|👽|🪐"
-          if ! git log -1 --pretty=%B | grep -q "$REQUIRED_EMOJI"; then
-            echo "Erreur : Le dernier commit doit contenir l'emoji $REQUIRED_EMOJI."
-            exit 1
-          fi
