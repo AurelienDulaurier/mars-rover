@@ -15,7 +15,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
 
 # Mettre en cache les dépendances .NET
     - name: Cache NuGet packages
@@ -29,3 +29,11 @@ jobs:
 # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test
+    
+    - name: Check commit message
+      run: |
+          REQUIRED_EMOJI="🚀|🪐|👽" # Remplacez par l'emoji souhaité
+          if ! git log -1 --pretty=%B | grep -q "$REQUIRED_EMOJI"; then
+            echo "Erreur : Le dernier commit doit contenir l'emoji $REQUIRED_EMOJI."
+            exit 1
+          fi
