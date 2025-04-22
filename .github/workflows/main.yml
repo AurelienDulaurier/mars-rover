@@ -50,7 +50,7 @@ jobs:
           \"text\": \"$RANDOM_MESSAGE\",
           \"attachments\": [
             {
-              \"image_url\": \"https://tenor.com/fr/view/sun-smile-yellow-gif-12607691130081834994\",
+              \"image_url\": \"https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif\",
               \"alt_text\": \"Soleil\"
             }
           ]
@@ -65,7 +65,7 @@ jobs:
           \"text\": \"$RANDOM_MESSAGE\",
           \"attachments\": [
             {
-              \"image_url\": \"https://tenor.com/fr/view/storm-tornado-spin-gif-17984726946096710187\",
+              \"image_url\": \"https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif\",
               \"alt_text\": \"Orage\"
             }
           ]
