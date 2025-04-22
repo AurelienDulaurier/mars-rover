@@ -12,13 +12,16 @@ jobs:
         fetch-depth: 0
 
     - name: Check commit message
+      id: check_commit
       run: |
           REQUIRED_EMOJI="🚀|👽|🪐"
           if ! git log -1 --pretty=%B | grep -E -q "$REQUIRED_EMOJI"; then
             echo "Erreur : Le dernier commit doit contenir l'emoji $REQUIRED_EMOJI."
+            echo "::set-output name=success::false"
             exit 1
           fi
- 
+          echo "::set-output name=success::true"
+
     # Installer le .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
@@ -37,3 +40,34 @@ jobs:
     # Exécuter tous les tests unitaires dans la solution
     - name: Execute unit tests
       run: dotnet test
+
+    # Envoyer une notification Slack
+    - name: Notify Slack
+      if: steps.check_commit.outputs.success == 'true'
+      uses: slackapi/slack-github-action@v1.18.0
+      with:
+        payload: |
+          {
+            "text": "✅ Le commit a réussi !",
+            "attachments": [
+              {
+                "image_url": "https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif",
+                "alt_text": "Soleil"
+              }
+            ]
+          }
+
+    - name: Notify Slack on failure
+      if: steps.check_commit.outputs.success == 'false'
+      uses: slackapi/slack-github-action@v1.18.0
+      with:
+        payload: |
+          {
+            "text": "⚠️ Le commit a échoué.",
+            "attachments": [
+              {
+                "image_url": "https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif",
+                "alt_text": "Orage"
+              }
+            ]
+          }
