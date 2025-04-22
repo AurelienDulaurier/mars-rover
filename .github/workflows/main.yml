@@ -18,7 +18,7 @@ jobs:
             echo "Erreur : Le dernier commit doit contenir l'emoji $REQUIRED_EMOJI."
             exit 1
           fi
-
+ 
     # Installer le .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
