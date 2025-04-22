@@ -41,29 +41,32 @@ jobs:
     - name: Execute unit tests
       run: dotnet test
 
-      # Envoyer une notification Slack
+    # Envoyer une notification Slack Success
     - name: Notify Slack Success
       if: steps.check_commit.outputs.success == 'true'
       run: |
-        curl -X POST -H 'Content-type: application/json' --data '{
-          "text": "✅ Le commit a réussi !",
-          "attachments": [
+        RANDOM_MESSAGE=$(echo -e "✅ Le commit a réussi !\n🎉 Bravo, tout fonctionne !\n🌟 Exécution réussie !" | shuf -n 1)
+        curl -X POST -H 'Content-type: application/json' --data "{
+          \"text\": \"$RANDOM_MESSAGE\",
+          \"attachments\": [
             {
-              "image_url": "https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif",
-              "alt_text": "Soleil"
+              \"image_url\": \"https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif\",
+              \"alt_text\": \"Soleil\"
             }
           ]
-        }' ${{ secrets.SLACK_WEBHOOK_URL }}
+        }" ${{ secrets.SLACK_WEBHOOK_URL }}
 
+    # Envoyer une notification Slack Failure
     - name: Notify Slack Failure
       if: steps.check_commit.outputs.success == 'false'
       run: |
-        curl -X POST -H 'Content-type: application/json' --data '{
-          "text": "⚠️ Le commit a échoué.",
-          "attachments": [
+        RANDOM_MESSAGE=$(echo -e "⚠️ Le commit a échoué.\n🚫 Oups, quelque chose ne va pas !\n😢 Échec de l'exécution." | shuf -n 1)
+        curl -X POST -H 'Content-type: application/json' --data "{
+          \"text\": \"$RANDOM_MESSAGE\",
+          \"attachments\": [
             {
-              "image_url": "https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif",
-              "alt_text": "Orage"
+              \"image_url\": \"https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif\",
+              \"alt_text\": \"Orage\"
             }
           ]
-        }' ${{ secrets.SLACK_WEBHOOK_URL }}
+        }" ${{ secrets.SLACK_WEBHOOK_URL }}
