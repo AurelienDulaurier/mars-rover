@@ -3,7 +3,7 @@ FROM python:3.14-rc-alpine
 
 # Répertoire travail
 WORKDIR /app
-
+ 
 # Copier le fichier de requirements (dans le fichier défini au dessus)
 COPY requirements.txt requirements.txt
 
