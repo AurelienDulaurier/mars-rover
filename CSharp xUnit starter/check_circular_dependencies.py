@@ -48,7 +48,7 @@
 #         print("Aucune dépendance circulaire détectée.")
 #         return 0
 #     return 1
-
+ 
 # if __name__ == "__main__":
 #     import sys
 #     if len(sys.argv) != 2:
