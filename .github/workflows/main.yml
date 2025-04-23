@@ -5,20 +5,23 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-    
+      
     - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Check commit message
+      id: check_commit
       run: |
           REQUIRED_EMOJI="🚀|👽|🪐"
           if ! git log -1 --pretty=%B | grep -E -q "$REQUIRED_EMOJI"; then
             echo "Erreur : Le dernier commit doit contenir l'emoji $REQUIRED_EMOJI."
+            echo "::set-output name=success::false"
             exit 1
           fi
- 
+          echo "::set-output name=success::true"
+
     # Installer le .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
@@ -37,3 +40,33 @@ jobs:
     # Exécuter tous les tests unitaires dans la solution
     - name: Execute unit tests
       run: dotnet test
+
+    # Envoyer une notification Slack Success
+    - name: Notify Slack Success
+      if: steps.check_commit.outputs.success == 'true'
+      run: |
+        RANDOM_MESSAGE=$(echo -e "✅ Le commit a réussi !\n🎉 Bravo, tout fonctionne !\n🌟 Exécution réussie !" | shuf -n 1)
+        curl -X POST -H 'Content-type: application/json' --data "{
+          \"text\": \"$RANDOM_MESSAGE\",
+          \"attachments\": [
+            {
+              \"image_url\": \"https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif\",
+              \"alt_text\": \"Soleil\"
+            }
+          ]
+        }" ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    # Envoyer une notification Slack Failure
+    - name: Notify Slack Failure
+      if: steps.check_commit.outputs.success == 'false'
+      run: |
+        RANDOM_MESSAGE=$(echo -e "⚠️ Le commit a échoué.\n🚫 Oups, quelque chose ne va pas !\n😢 Échec de l'exécution." | shuf -n 1)
+        curl -X POST -H 'Content-type: application/json' --data "{
+          \"text\": \"$RANDOM_MESSAGE\",
+          \"attachments\": [
+            {
+              \"image_url\": \"https://media.giphy.com/media/3o7aD2sa7Y8g3g1h8I/giphy.gif\",
+              \"alt_text\": \"Orage\"
+            }
+          ]
+        }" ${{ secrets.SLACK_WEBHOOK_URL }}
