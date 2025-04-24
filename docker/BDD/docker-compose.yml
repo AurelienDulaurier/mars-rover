@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${USER}
+      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_DB: ${DB}
+    networks:
+      - my_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  app:
+    image: alpine
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://user:password@db/mydb
+    command:
+      [
+        "sh",
+        "-c",
+        "while ! pg_isready -U user; do sleep 1; done; echo 'Database is ready!'",
+      ]
+    networks:
+      - my_network
+
+networks:
+  my_network:
